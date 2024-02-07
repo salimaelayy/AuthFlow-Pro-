@@ -2,14 +2,14 @@
   "name": "authflow",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev:front": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "dev": "concurrently \"npm run dev:front\" \"npm run dev:back\"",
-    "dev:back": "nodemon backend/app.js"
+    "dev:back": "nodemon backend/server.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
