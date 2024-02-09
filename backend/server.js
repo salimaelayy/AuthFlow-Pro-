@@ -9,7 +9,6 @@ app.use(express.json())
 
 require('dotenv').config()
 require('./connection')
-
 app.use('/auth', AuthRouter)
 app.use('/user', UserRouter)
 app.use('/role', RoleRouter)

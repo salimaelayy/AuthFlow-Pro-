@@ -8,7 +8,8 @@ const readall= async (req, res, next) =>
     return res.json('all permissions')  
 }
 const create = async (req, res, next) => {
- 
+    console.log('all')
+    return res.json('all permissions')  
 };
 const readbyid= async (req, res, next) =>
 { 

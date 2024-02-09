@@ -22,7 +22,7 @@ const register = async (req, res, next) => {
           username: username,
           email: email,
           password: hashPass,
-          role: role
+          role: "User"
       });
 
       return res.status(201).json({ data: newUser, message: 'New user created successfully' });
@@ -49,10 +49,21 @@ const updatebyid= async(req,res,next)=>
     return res.json('update')
 
 }
-const deletebyid= async(req,res)=>
+
+const deletebyid= async(req,res,next)=>
+{
+  console.log('deleted')
+  return res.json('delete')
+}
+const assignRole= async(req,res,next)=>
+{
+  console.log('deleted')
+  return res.json('delete')
+}
+const removeRole= async(req,res)=>
 {
   console.log('deleted')
   return res.json('delete')
 }
 
-module.exports={register,readall,readbyid,updatebyid,deletebyid}
+module.exports={register,readall,readbyid,updatebyid,deletebyid,assignRole,removeRole}
