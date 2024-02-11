@@ -1,5 +1,6 @@
 const userModel = require('../models/User')
 const bcrypt = require('bcrypt')
+const {CreateToken}=require('../middlewares/CreateToken')
 
 const register = async (req, res, next) => {
   try {
@@ -18,18 +19,23 @@ const register = async (req, res, next) => {
     if (existingUser) {
       return res.status(409).json({ message: 'User already exists' })
     }
-
+    const defaultRoleId="65c7a4c6bde45224870c7884"
     // Create a new user
     const newUser = await userModel.create({
       username: username,
       email: email,
       password: hashPass,
-      role: 'User',
+      role: [defaultRoleId]
     })
+    // Creating the access token
+    const accessToken = CreateToken(newUser);
 
+    // Putting the token in a cookie
+    res.cookie("access-token", accessToken, { maxAge: 90000, httpOnly: true });
+    // Send a success response
     return res
       .status(201)
-      .json({ data: newUser, message: 'New user created successfully' })
+      .json({  accessToken, id: newUser._id,data: newUser, message: 'New user created successfully' })
   } catch (error) {
     console.error('Error while registering user:', error)
     return res.status(500).json({ message: 'Internal server error' })
@@ -62,27 +68,48 @@ const readbyid = async (req, res, next) => {
     res.status(500).send('Internal Server Error')
   }
 }
+const readbyname = async (req, res, next) => {
+  try {
+    const { username } = req.query; // Extract the username from the query parameters
+
+    // Use findOne to find a user by their username
+    const user = await userModel.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'No user found with the given username' });
+    }
+
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.error('Error reading user by username:', error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
 
 const updatebyid = async (req, res, next) => {
-  const userId = req.params._id
+  const userId = req.params.id
 
   try {
-    if (!req.body) {
-      // If req.body is undefined or falsy, handle the error
+    if (!req.body) { 
+      //verify if request body is missing
       return res.status(400).json({ message: 'Request body is missing' })
     }
 
-    const { userName, permission } = req.body
+    const { username,email,role, } = req.body
 
     const user = await userModel.findById(userId)
 
     if (!user) {
+      console.log("update");
       return res.status(404).json({ message: 'user not found' })
+      
     }
 
     // Update user information based on the request body
-    user.username = userName !== undefined ? userName : user.username
-    user.permissions = permission !== undefined ? permission : user.permissions
+    user.username = username !== undefined ? username : user.username
+    user.email = email !== undefined ? email : user.email
+    user.role = role !== undefined ? role : user.role
 
     // Save the updated user
     const updatedUser = await user.save()
@@ -100,11 +127,11 @@ const updatebyid = async (req, res, next) => {
 
 const deletebyid = async (req, res, next) => {
   try {
-    const userId = req.params._id
+    const userId = req.params.id
 
     // Verify that the server got the ID
     console.log('Received request with ID:', userId)
-    const deletedUser = await roleModel.findByIdAndDelete(userId)
+    const deletedUser = await userModel.findByIdAndDelete(userId)
 
     // Check if the user was not found
     if (!deletedUser) {
@@ -175,6 +202,7 @@ module.exports = {
   register,
   readall,
   readbyid,
+  readbyname,
   updatebyid,
   deletebyid,
   assignRole,

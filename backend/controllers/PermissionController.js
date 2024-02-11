@@ -13,25 +13,6 @@ const readall = async (req, res, next) => {
   }
 }
 
-const readbyid = async (req, res, next) => {
-  try {
-    //get id
-    const permissionId = req.params.id
-    //verify that server got the id
-    console.log('Received request with ID:', permissionId)
-    const permission = await permissionModel.findById(permissionId)
-    if (!response) {
-      res.status(404).json({ error: 'permission not found' })
-      return
-    }
-
-    res.json({ data: permission })
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: 'An error occurred' })
-  }
-}
-
 const create = async (req, res, next) => {
   const { permissionName } = req.body
 
@@ -52,7 +33,24 @@ const create = async (req, res, next) => {
     })
   }
 }
+const readbyid = async (req, res, next) => {
+  try {
+    //get id
+    const permissionId = req.params.id
+    //verify that server got the id
+    console.log('Received request with ID:', permissionId)
+    const permission = await permissionModel.findById(permissionId)
+    if (!permission) {
+      res.status(404).json({ error: 'permission not found' })
+      return
+    }
 
+    res.json({ data: permission })
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'An error occurred' })
+  }
+}
 const updatebyid = async (req, res, next) => {
   try {
     const permissionId = req.params.id
@@ -99,15 +97,7 @@ const deletebyid = async (req, res) => {
     return res.status(500).json({ error: 'An error occurred' })
   }
 }
-// const assignrole=(req,res,next)=>
-// {
 
-// }
-
-// const deleterole=(req,res,next)=>
-// {
-
-// }
 
 module.exports = {
   readall,
@@ -115,6 +105,4 @@ module.exports = {
   create,
   updatebyid,
   deletebyid,
-  // assignrole,
-  // deleterole,
 }

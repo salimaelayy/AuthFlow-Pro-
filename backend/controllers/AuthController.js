@@ -1,37 +1,48 @@
 const userModel = require('../models/User')
 const bcrypt = require('bcrypt')
+const {CreateToken} = require('../middlewares/CreateToken')
 
 const login = async (req, res, next) => {
-  //catch user input
-  const { username, password } = req.body
+  console.log("i'm here")
+  // Catch user input
+  const { username, password } = req.body;
   try {
-    //verify if input is empty
-    if (!username) {
-      return res.status(400).json({ message: ' invalid information' })
+    // Verify if input is empty
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Invalid information' });
     }
-    const LogedInUser = userModel.findOne({ username })
-    // verify if the user already exists
-    if (!LogedInUser) {
-      console.log('user already exists')
-      return res.status(409).json('user already exists')
+    
+    // Find the user in the database
+    const userLoggedIn = await userModel.findOne({ username });
+
+    // Verify if the user exists
+    if (!userLoggedIn) {
+      console.log('User does not exist');
+      return res.status(404).json('User does not exist');
     }
 
-    const dbPassword = LogedInUser.password
-    if (!password || !dbPassword) {
-      return res.status(400).json('username or password is invalid')
-    }
-    //check if entered password and dbpassword match
-    const match = bcrypt.compare(dbPassword, password)
+    // Compare the provided password with the hashed password from the database
+    const match = await bcrypt.compare(password, userLoggedIn.password);
 
-    //verify if they don't match
-    if (!match) return res.status(400).json('username of password is incorrect')
+    // Verify if passwords match
+    if (!match) {
+      return res.status(400).json('Username or password is incorrect');
+    }
+
+    // Creating the access token
+    const accessToken = CreateToken(userLoggedIn);
+
+    // Putting the token in a cookie
+    res.cookie("access-token", accessToken, { maxAge: 90000, httpOnly: true });
+
+    // Send a success response
+    return res.json({ accessToken, id: userLoggedIn._id });
   } catch (error) {
-    console.error('Error during login:', error)
-    res
-      .status(500)
-      .json({ error: error.message, message: 'Error during login' })
+    console.error('Error during login:', error);
+    return res.status(500).json({ error: error.message, message: 'Error during login' });
   }
 }
+
 
 const profile = async (req, res, next) => {
   console.log('you are in the profile')
@@ -39,7 +50,7 @@ const profile = async (req, res, next) => {
 }
 const logout = async (req, res) => {
   console.log('you are logged out')
-  return res.json(' ')
+  res.clearCookie('access-token').send('Logout successful');
 }
 
 module.exports = { login, logout, profile }

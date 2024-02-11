@@ -17,7 +17,23 @@ const readall = async (req, res, next) => {
     res.status(500).send('Server Error')
   }
 }
+const create = async (req, res, next) => {
+  const { roleName, permissions } = req.body //destr
 
+  try {
+    const newRole = await roleModel.create({
+      roleName,
+      permissions,
+    })
+    res.status(201).json({ role: newRole })
+    console.log('Request Body:', req.body)
+  } catch (error) {
+    console.error(error)
+    console.error('Error adding new Role:', error)
+
+    res.status(500).send('Internal Server Error')
+  }
+}
 const readbyid = async (req, res, next) => {
   try {
     const role = await roleModel.findById(req.params.id)
@@ -32,25 +48,9 @@ const readbyid = async (req, res, next) => {
     res.status(500).send('Internal Server Error')
   }
 }
-const create = async (req, res, next) => {
-  const { roleName, permission } = req.body //destr
 
-  try {
-    const newRole = await role.create({
-      roleName,
-      permission,
-    })
-    res.status(201).json({ role: newRole })
-    console.log('Request Body:', req.body)
-  } catch (error) {
-    console.error(error)
-    console.error('Error adding new Role:', error)
-
-    res.status(500).send('Internal Server Error')
-  }
-}
 const updatebyid = async (req, res, next) => {
-  const roleId = req.params._id
+  const roleId = req.params.id
 
   try {
     if (!req.body) {
@@ -65,9 +65,8 @@ const updatebyid = async (req, res, next) => {
     if (!role) {
       return res.status(404).json({ message: 'Role not found' })
     }
-
     // Update role information based on the request body
-    role.nameRole = roleName !== undefined ? roleName : role.nameRole
+    role.roleName = roleName !== undefined ? roleName : role.roleName
     role.permissions = permission !== undefined ? permission : role.permissions
 
     // Save the updated role
@@ -85,7 +84,7 @@ const updatebyid = async (req, res, next) => {
 }
 const deletebyid = async (req, res) => {
   try {
-    const roleId = req.params._id
+    const roleId = req.params.id
 
     // Verify that the server got the ID
     console.log('Received request with ID:', roleId)
@@ -114,5 +113,5 @@ module.exports = {
   readbyid,
   create,
   updatebyid,
-  deletebyid,
+  deletebyid
 }
