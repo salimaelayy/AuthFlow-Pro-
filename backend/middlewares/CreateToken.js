@@ -1,5 +1,6 @@
-const {sign}=require('jsonwebtoken')
-require ('dotenv')
+const {sign} = require('jsonwebtoken')
+require('dotenv').config();
+
 
 const CreateToken=(user)=>
 {

@@ -5,7 +5,8 @@ const {CreateToken}=require('../middlewares/CreateToken')
 const register = async (req, res, next) => {
   try {
     const { username, password, email, role } = req.body
-    if (!username || !password || !email || !role) {
+
+    if (!username || !password || !email ) {
       return res
         .status(400)
         .json({ message: 'Please provide valid information' })
@@ -19,13 +20,12 @@ const register = async (req, res, next) => {
     if (existingUser) {
       return res.status(409).json({ message: 'User already exists' })
     }
-    const defaultRoleId="65c7a4c6bde45224870c7884"
+
     // Create a new user
     const newUser = await userModel.create({
       username: username,
       email: email,
-      password: hashPass,
-      role: [defaultRoleId]
+      password: hashPass
     })
     // Creating the access token
     const accessToken = CreateToken(newUser);
