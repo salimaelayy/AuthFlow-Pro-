@@ -1,31 +1,39 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const userModel = require('../models/User');
+require('dotenv').config()
 
 // Middleware for verifying permissions
 const verifyPermission = (requiredPermissions) => {
-    
     return async (req, res, next) => {
-        // Retrieve the access token from the request cookies
-        const accessToken = req.cookies['access-token'];
-
-        // Check if the access token is provided
-        if (!accessToken) {
-            return res.status(401).json({ message: 'Access token not provided' });
-        }
-
         try {
+            // Retrieve the access token from the request cookies
+            const accessToken = req.cookies['access-token'];
+
+            // Check if the access token is provided
+            if (!accessToken) {
+                return res.status(401).json({ message: 'Access token not provided' });
+            }
+
             // Verify the access token and extract the user ID
-            const decodedToken = jwt.verify(accessToken, process.env.JWT_SECRET);
-            const userId = decodedToken.userId;
+            const decodedToken = jwt.verify(accessToken, process.env.SECRETTOKEN);
+            const userId = decodedToken.id;
+            console.log(userId);
+
+            // Check if the user ID is undefined
+            if (!userId) {
+                console.error('User ID is undefined');
+                return res.status(401).json({ error: 'User ID not found in token' });
+            }
 
             // Find the user in the database by user ID and populate the role with permissions
-            const user = await User.findById(userId).populate({
+            const user = await userModel.findById(userId).populate({
                 path: 'role',
                 populate: { path: 'permissions' }
             });
 
             // Check if the user exists
             if (!user) {
+                console.error('User not found in the database');
                 return res.status(404).json({ message: 'User not found' });
             }
 

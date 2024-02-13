@@ -33,10 +33,10 @@ const login = async (req, res, next) => {
     const accessToken = CreateToken(userLoggedIn);
 
     // Putting the token in a cookie
-    res.cookie("access-token", accessToken, { maxAge: 90000, httpOnly: true });
+    res.cookie("access-token", accessToken, { maxAge: 100000, httpOnly: true });
 
     // Send a success response
-    return res.json({ accessToken, id: userLoggedIn._id });
+    return res.json({  id: userLoggedIn._id });
   } catch (error) {
     console.error('Error during login:', error);
     return res.status(500).json({ error: error.message, message: 'Error during login' });

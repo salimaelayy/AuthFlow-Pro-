@@ -105,13 +105,89 @@ const deletebyid = async (req, res) => {
     return res.status(500).json({ error: 'An error occurred' })
   }
 }
+const addpermissionstorole = async (req, res, next) => {
+  const { roleId } = req.params; // Extract roleId from URL parameter
+  const { permissions } = req.body;
+
+  try {
+    // Find the role by its ID
+    const role = await roleModel.findById(roleId);
+
+    if (!role) {
+      return res.status(404).json({ message: 'Role not found' });
+    }
+
+    // Check if permissions are provided and are in array format
+    if (!Array.isArray(permissions) || permissions.length === 0) {
+      return res.status(400).json({ message: 'Permissions must be provided as a non-empty array' });
+    }
+
+    // Add permissions to the role
+    role.permissions.push(...permissions);
+
+    // Save the updated role
+    const updatedRole = await role.save();
+
+    return res.status(200).json({ message: 'Permissions added to role successfully', role: updatedRole });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+};
+
+const deleteRoleById = async (req, res, next) => {
+  const roleId = req.params.id; // Extract roleId from URL parameter
+
+  try {
+    // Find the role by its ID and delete it
+    const deletedRole = await Role.findByIdAndDelete(roleId);
+
+    // Check if the role was found and deleted
+    if (!deletedRole) {
+      return res.status(404).json({ message: 'Role not found' });
+    }
+
+    // Return success message
+    return res.status(200).json({ message: 'Role deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+};
 
 
+const deletepermissionsfromrole = async (req, res, next) => {
+  const roleId = req.params.roleid; // Correctly access roleId from URL parameter
+  const { permissions } = req.body;
+
+  try {
+    // Find the role by its ID
+    const role = await roleModel.findById(roleId);
+
+    if (!role) {
+      return res.status(404).json({ message: 'Role not found' });
+    }
+
+    // Filter out the permissions to delete from the role's permissions array
+    role.permissions = role.permissions.filter(permission => !permissions.includes(permission));
+
+    // Save the updated role with filtered permissions
+    const updatedRole = await role.save();
+
+    return res.status(200).json({ message: 'Permissions deleted from role successfully', role: updatedRole });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+  }
+};
 
 module.exports = {
   readall,
   readbyid,
   create,
   updatebyid,
-  deletebyid
+  deletebyid,
+  addpermissionstorole,
+  deletepermissionsfromrole
 }
+
