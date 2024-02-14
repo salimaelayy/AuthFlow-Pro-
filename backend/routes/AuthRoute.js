@@ -6,17 +6,10 @@ const { verifyPermission } = require('../middlewares/RoleValidation');
 
 /**
  * @swagger
- * tags:
- *   name: Authentication
- *   description: User authentication endpoints
- */
-
-/**
- * @swagger
- * /auth/login:
+ * /api/login:
  *   post:
- *     summary: User login
- *     description: Authenticate user and generate access token
+ *     summary: Login user
+ *     description: Logs in a user with the provided credentials
  *     requestBody:
  *       required: true
  *       content:
@@ -28,54 +21,51 @@ const { verifyPermission } = require('../middlewares/RoleValidation');
  *                 type: string
  *               password:
  *                 type: string
- *             required:
- *               - username
- *               - password
  *     responses:
- *       '200':
- *         description: User logged in successfully
- *       '400':
- *         description: Invalid request data
- *       '401':
- *         description: Unauthorized request
- *       '500':
- *         description: Internal server error
+ *       200:
+ *         description: Logged in successfully
+ *       400:
+ *         description: Invalid information
+ *       404:
+ *         description: User does not exist
+ *       401:
+ *         description: Username or password is incorrect
+ *       500:
+ *         description: Error during login
  */
 router.post('/login', AuthController.login);
 
 /**
  * @swagger
- * /auth/logout:
+ * /api/logout:
  *   post:
- *     summary: User logout
- *     description: Invalidate access token and log user out
+ *     summary: Logout user
+ *     description: Logs out the currently logged-in user
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       '200':
- *         description: User logged out successfully
- *       '401':
- *         description: Unauthorized request
- *       '500':
- *         description: Internal server error
+ *       200:
+ *         description: Logged out successfully
+ *       401:
+ *         description: Unauthorized
  */
 router.post('/logout', validateToken, AuthController.logout);
 
 /**
  * @swagger
- * /auth/profile:
+ * /api/profile:
  *   get:
  *     summary: Get user profile
- *     description: Retrieve user profile information
+ *     description: Retrieves the profile of the currently logged-in user
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       '200':
+ *       200:
  *         description: User profile retrieved successfully
- *       '401':
- *         description: Unauthorized request
- *       '500':
- *         description: Internal server error
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (insufficient permissions)
  */
 router.get('/profile', validateToken, verifyPermission, AuthController.profile);
 
