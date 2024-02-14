@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt')
 const {CreateToken} = require('../middlewares/CreateToken')
 
 const login = async (req, res, next) => {
-  console.log("i'm here")
   // Catch user input
   const { username, password } = req.body;
   try {

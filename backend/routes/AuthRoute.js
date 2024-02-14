@@ -6,5 +6,5 @@ const {verifyPermission}=require('../middlewares/RoleValidation')
 
 router.post('/login',AuthController.login)
 router.post('/logout',validateToken, AuthController.logout)
-router.get('/profile',verifyPermission(['PROFILE_USER']),validateToken, AuthController.profile)
+router.get('/profile',AuthController.profile)
 module.exports = router
