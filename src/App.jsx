@@ -1,22 +1,34 @@
-import { useState } from 'react';
+// App.js
 import './App.css';
-import Login from './pages/login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Home from './pages/Home';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Import from react-router-dom
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from '../src/pages/Home';
+import Login from '../src/pages/Login';
+import Dashboard from '../src/pages/Dashboard';
+import PrivateRoute from './components/PrivateRoute'; // Import the PrivateRoute component
+import { useState } from 'react';
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+  };
 
   return (
     <Router>
       <Routes>
-        <Route exact path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+        {/* Use the PrivateRoute component for the dashboard */}
+        <Route ><PrivateRoute
+          path="/dashboard"
+          element={<Dashboard />}
+          isAuthenticated={isAuthenticated}
+        /></Route>
       </Routes>
     </Router>
   );
