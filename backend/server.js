@@ -4,6 +4,9 @@ const AuthRouter = require('./routes/AuthRoute');
 const UserRouter = require('./routes/UserRoute');
 const RoleRouter = require('./routes/RoleRoute');
 const PermissionRouter = require('./routes/PermissionRoute');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc =require('swagger-jsdoc');
+
 // const swaggerJSDoc = require('../swagger'); 
 const cors = require('cors');
 
@@ -25,7 +28,6 @@ app.use('/role', RoleRouter);
 app.use('/permission', PermissionRouter);
 
 //swagger __________________
-const swaggerJSDoc =require('swagger-jsdoc');
 
 const options = {
   definition: {
@@ -41,8 +43,6 @@ const options = {
 };
 
 const swaggerSpec = swaggerJSDoc(options);
-const swaggerUi = require('swagger-ui-express');
-
 // Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); // Changed the path to /api-docs
 
