@@ -4,7 +4,33 @@ const UserController = require('../controllers/UserController')
 const {validateToken}= require('../middlewares/ValidateToken')
 const {verifyPermission}=require('../middlewares/RoleValidation')
 
-router.get('/',verifyPermission(['READBYALL_USER']),validateToken, UserController.readall)
+/**
+ * @swagger
+ * tags:
+ *   name: Books
+ *   description: The books managing API
+ * /books:
+ *   post:
+ *     summary: Create a new book
+ *     tags: [Books]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Book'
+ *     responses:
+ *       200:
+ *         description: The created book.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Book'
+ *       500:
+ *         description: Some server error
+ *
+ */
+router.get('/',verifyPermission(['READALL_ROLE']),validateToken, UserController.readall)
 router.get('/:id',verifyPermission(['READBYID_USER']),validateToken, UserController.readbyid)
 router.get('/username',verifyPermission(['READBYUSERNAME_USER']),validateToken, UserController.readbyname)
 router.post('/register',UserController.register)

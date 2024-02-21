@@ -1,13 +1,13 @@
-// PrivateRoute.js
 import React from 'react';
-import { Route, Navigate } from 'react-router-dom';
+import { Route, Navigate, useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
-const PrivateRoute = ({ element: Element, isAuthenticated, ...rest }) => {
-  return isAuthenticated ? (
-    <Route {...rest} element={<Element />} />
-  ) : (
-    <Navigate to="/login" replace />
-  );
+const PrivateRoute = ({ children }) => {
+
+  console.log(JSON.parse(localStorage.getItem('userInfo')));
+  const userData = JSON.parse(localStorage.getItem('userInfo'))
+
+return <>{userData?.id ? children : <Navigate to={'/login'}/>}</>
 };
 
 export default PrivateRoute;

@@ -7,7 +7,8 @@ const verifyPermission = (requiredPermissions) => {
     return async (req, res, next) => {
         try {
             // Retrieve the access token from the request cookies
-            const accessToken = req.cookies['access-token'];
+            const accessToken = req.cookies['accessToken'];
+            console.log("req.cookies : ",req.cookies['accessToken']);
 
             // Check if the access token is provided
             if (!accessToken) {
