@@ -1,41 +1,42 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { RiLogoutBoxLine } from 'react-icons/ri';
-    
+import axios from 'axios';
+import Sidebar from '../components/sidebar';
+import useAuth from '../hooks/useAuth';
+import { Navigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const [users, setUsers] = useState([]);
+  const [error, setError] = useState('');
+  const isAuthenticated = true;
+    useEffect(() => {
+      const fetchUsers = async () => {
+        try {
+          const response = await axios.get('http://localhost:3002/user',{withCredentials : true});
+          console.log(response.data.data); 
+          setUsers(response.data.data)
+        } catch (error) {
+          console.error('Error fetching users:', error);
+          setError('Failed to fetch user data. Please try again later.');
+        }
+      };
+  
+      fetchUsers();
+    }, []); 
+  
+
+  
   return (
+    
     <div className="flex h-screen">
-      {/* Sidebar */}
-      <div className="bg-gray-800 text-white w-1/5 py-8 px-4 flex flex-col justify-between">
-        {/* Logo */}
-        <div className="text-center mb-6">
-          <img src="/path/to/logo.png" alt="Logo" className="w-16 h-16 mx-auto mb-4" />
-          <h1 className="text-xl font-bold">Your Logo Name</h1>
-        </div>
-        
-        {/* Navigation Links */}
-        <ul>
-          <li className="mb-4"><a href="#" className="hover:text-gray-300">Users</a></li>
-          <li className="mb-4"><a href="#" className="hover:text-gray-300">Add User</a></li>
-          <li className="mb-4"><a href="#" className="hover:text-gray-300">Edit User</a></li>
-        </ul>
-
-        {/* Logout Button */}
-        <button className="flex items-center text-gray-400 hover:text-white">
-          <RiLogoutBoxLine className="mr-2" />
-          Logout
-        </button>
-      </div>
-
-     
-      {/* Main Content */}
-      <div className="w-3/4 py-8 px-8">
+      
+      <Sidebar/>
+      {isAuthenticated ? (
+        <div className="w-3/4 py-8 px-8">
         <h1 className="text-3xl font-bold mb-8">User Management Dashboard</h1>
-
-        {/* User List Section */}
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-4">User List</h2>
-          {/* User Table Component */}
+          
           <table className="w-full border-collapse border border-gray-200">
             <thead className="bg-gray-200">
               <tr>
@@ -46,24 +47,27 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {/* Loop through users and display in table rows */}
-              <tr>
-                <td className="border border-gray-200 px-4 py-2">1</td>
-                <td className="border border-gray-200 px-4 py-2">John Doe</td>
-                <td className="border border-gray-200 px-4 py-2">john@example.com</td>
-                <td className="border border-gray-200 px-4 py-2">
-                  {/* Add edit and delete buttons */}
-                  <button className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded mr-2">Edit</button>
-                  <button className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded">Delete</button>
-                </td>
-              </tr>
+              
+              {users.map((user, index) => (
+                <tr key={index}>
+                  <td className="border border-gray-200 px-4 py-2">{user._id}</td>
+                  <td className="border border-gray-200 px-4 py-2">{user.username}</td>
+                  <td className="border border-gray-200 px-4 py-2">{user.email}</td>
+                  <td className="border border-gray-200 px-4 py-2">
+                    <button className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-2 rounded mr-2">Edit</button>
+                    <button className="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded">Delete</button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
       </div>
+      ) : (
+        <p>User is not authenticated!</p>
+      )}
+      
     </div>
   );
 };
-    
-
-export default Dashboard
+export default Dashboard;

@@ -1,8 +1,7 @@
 const { validate,verify } = require('jsonwebtoken')
 
 const validateToken = (req, res, next) => {
-  const accessToken = req.cookies ? req.cookies['access-token'] : null
-console.log(accessToken)
+  const accessToken = req.cookies ? req.cookies['accessToken'] : null
   if (!accessToken) {
     return res.status(401).json({ message: 'user not authenticated' })
   }

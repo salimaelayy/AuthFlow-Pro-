@@ -7,6 +7,7 @@ const { verifyPermission } = require('../middlewares/RoleValidation');
 /**
  * @swagger
  * tags:
+<<<<<<< HEAD
  *   name: Users
  *   description: User management endpoints
  */
@@ -102,11 +103,20 @@ router.get('/username', verifyPermission(['READBYUSERNAME_USER']), validateToken
  *     summary: Register a new user
  *     description: Register a new user with username, email, and password
  *     tags: [Users]
+=======
+ *   name: Books
+ *   description: The books managing API
+ * /books:
+ *   post:
+ *     summary: Create a new book
+ *     tags: [Books]
+>>>>>>> 3aa65a3af00df3528b78898f6c63df736d2c3969
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
+<<<<<<< HEAD
  *             type: object
  *             properties:
  *               username:
@@ -275,3 +285,26 @@ router.delete('/:id/roles/:roleId/remove', verifyPermission(['DELETEROLE_USER'])
 
 
 module.exports = router;
+=======
+ *             $ref: '#/components/schemas/Book'
+ *     responses:
+ *       200:
+ *         description: The created book.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Book'
+ *       500:
+ *         description: Some server error
+ *
+ */
+router.get('/',verifyPermission(['READALL_ROLE']),validateToken, UserController.readall)
+router.get('/:id',verifyPermission(['READBYID_USER']),validateToken, UserController.readbyid)
+router.get('/username',verifyPermission(['READBYUSERNAME_USER']),validateToken, UserController.readbyname)
+router.post('/register',UserController.register)
+router.put('/update/:id',verifyPermission(['UPDATE_USER']),validateToken,verifyPermission(['UPDATE_USER']), UserController.updatebyid)
+router.delete('/delete/:id',verifyPermission(['DELETE_USER']),validateToken, UserController.deletebyid)
+router.post('/assignrole',verifyPermission(['ADDROLE_USER']),validateToken, UserController.assignRole);
+router.delete('/:id/roles/:roleId/remove',verifyPermission(['DELETEROLE_USER']),validateToken, UserController.removeRole);
+module.exports = router
+>>>>>>> 3aa65a3af00df3528b78898f6c63df736d2c3969
