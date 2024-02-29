@@ -37,9 +37,9 @@ const register = async (req, res, next) => {
       .status(201)
       .json({  accessToken, id: newUser._id,data: newUser, message: 'New user created successfully' })
   } catch (error) {
-    console.error('Error while registering user:', error)
-    return res.status(500).json({ message: 'Internal server error' })
-  }
+  console.error('Error while registering user:', error);
+  return res.status(500).json({ message: 'Internal server error' });
+}
 }
 
 const readall = async (req, res, next) => {
